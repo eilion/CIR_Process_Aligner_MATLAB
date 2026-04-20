@@ -1,0 +1,14 @@
+nSamples: 1000
+num_Z: NaN
+islearn_average_sedrate: Yes
+islearn_shift: Yes
+islearn_scale: Yes
+alpha: 2
+beta: 1.922
+rho: 0.634
+a_d18O: 3
+b_d18O: 4
+a_14C: 10
+b_14C: 11
+start_depth: 0
+min_start_age: -0.1

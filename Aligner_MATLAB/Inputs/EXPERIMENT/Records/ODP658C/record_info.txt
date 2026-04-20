@@ -1,0 +1,4 @@
+num_Z: 144
+init_sedrate: 0.2083
+init_scale: 1
+init_shift: 0

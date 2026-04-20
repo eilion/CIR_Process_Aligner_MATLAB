@@ -1,0 +1,4 @@
+nSamples: 100
+a: 3
+b: 4
+length_interval: 0.1

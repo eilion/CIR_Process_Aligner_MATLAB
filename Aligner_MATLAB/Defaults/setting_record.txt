@@ -1,8 +1,7 @@
 nSamples: 1000
-num_Z: NaN
 islearn_average_sedrate: Yes
-islearn_shift: Yes
 islearn_scale: Yes
+islearn_shift: Yes
 alpha: 2
 beta: 1.922
 rho: 0.634

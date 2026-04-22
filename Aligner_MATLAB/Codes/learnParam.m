@@ -49,8 +49,11 @@ if strcmp(setting.islearn_shift,'Yes')||strcmp(setting.islearn_scale,'Yes')
         for r = 1:10000
             PDEV = zeros(2,1);
 
-            QQ = (2.*A2+1)*(YY-CC.*mu-HH)./(2.*B2.*CC.^2*sig.^2+(YY-CC.*mu-HH).^2);
-
+            if isinf(A2)&&isinf(B2)
+                QQ = (YY-CC.*mu-HH)./(CC.^2.*sig.^2);
+            else
+                QQ = (2.*A2+1)*(YY-CC.*mu-HH)./(2.*B2.*CC.^2*sig.^2+(YY-CC.*mu-HH).^2);
+            end
             PDEV(1) = sum(QQ.*(YY-HH)./CC-1./CC,"all")./size(AGE,2);
             PDEV(2) = sum(QQ,"all")./size(AGE,2);
 

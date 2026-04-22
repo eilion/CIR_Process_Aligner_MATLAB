@@ -154,7 +154,11 @@ for rr = 1:MAX_ITERS
         PSIG = interp1(stack.A,stack.PSIG,AA_Y,'linear','extrap');
 
         ZZ = (YY-data.scale.*MU-data.shift)./data.scale;
-        ALPHA = (2.*A2+1).*(ZZ.*SIG.^2.*PMU+ZZ.^2.*SIG.^3.*PSIG)./(2.*B2+ZZ.^2.*SIG.^2) - SIG.*PSIG;
+        if isinf(A2)&&isinf(B2)
+            ALPHA = ZZ.*SIG.^2.*PMU + ZZ.^2.*SIG.^3.*PSIG - SIG.*PSIG;
+        else
+            ALPHA = (2.*A2+1).*(ZZ.*SIG.^2.*PMU+ZZ.^2.*SIG.^3.*PSIG)./(2.*B2+ZZ.^2.*SIG.^2) - SIG.*PSIG;
+        end
 
         ALPHA = QQ_Y*ALPHA;
 

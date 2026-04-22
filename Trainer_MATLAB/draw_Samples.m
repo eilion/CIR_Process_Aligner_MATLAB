@@ -1,5 +1,12 @@
 function draw_Samples(inputFile,ALPHA,BETA0,RHO0,INT)
 
+% inputFile: the name of folder in 'Initializations/'. For example,
+% 'DATA_02282025_K_4_INT_0.5'. Here, K = 2*ALPHA.
+% ALPHA: the value of \alpha in the main manuscript. For example, '2.0'.
+% BETA0: the initial value of \beta in the main manuscript.
+% RHO0: the initial value of \rho in the main manuscript.
+% INT: the length of unitless interval. For example, '0.5'.
+
 addpath('Codes/');
 disp('-----------------------------------------------------------------');
 disp('## This software is designed to learn the accumulation rate model (gamma process).');

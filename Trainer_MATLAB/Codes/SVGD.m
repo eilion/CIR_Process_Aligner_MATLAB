@@ -23,20 +23,6 @@ N0 = size(SAMPLES.D,1);
 
 AP = 0:setting.interval/nSamples:(setting.interval-setting.interval/nSamples);
 
-
-%{
-HHH = zeros(N1,N0,nSamples);
-for k = 1:nSamples
-    for n = 1:N1
-        CNT = floor((D1(n)+AP(k))/setting.interval);
-        HHH(n,1:CNT,k) = setting.interval;
-        HHH(n,CNT+1,k) = D1(n) + AP(k) - CNT.*setting.interval;
-        HHH(n,1,k) = HHH(n,1,k) - AP(k);
-    end
-end
-%}
-
-
 CNT = zeros(N1,1);
 HH = zeros(N1,N0);
 for n = 1:N1
@@ -83,20 +69,6 @@ for rr = 1:MAX_ITERS
 
     SAM_T = pagetranspose(SAM);
 
-    %{
-    KK = - 2.*BETA./(1-RHO.^2).*(sum(SAM_T.^2,2)+pagetranspose(sum(SAM_T.^2,2))-2.*pagemtimes(SAM_T,SAM));
-    KK = KK - 2.*BETA.*RHO.^2./(1-RHO.^2).*(sum(SAM_T(:,2:end-1,:).^2,2)+pagetranspose(sum(SAM_T(:,2:end-1,:).^2,2))-2.*pagemtimes(SAM_T(:,2:end-1,:),SAM(2:end-1,:,:)));
-    KK = KK + 4.*BETA.*RHO./(1-RHO.^2).*(sum(SAM_T(:,1:end-1,:).*SAM_T(:,2:end,:),2)+pagetranspose(sum(SAM_T(:,1:end-1,:).*SAM_T(:,2:end,:),2))-pagemtimes(SAM_T(:,2:end,:),SAM(1:end-1,:,:))-pagemtimes(SAM_T(:,1:end-1,:),SAM(2:end,:,:)));
-
-    KK = exp(KK);
-
-    PK = zeros(N0,nSamples,setting.K);
-    PK(1,:,:) = 4.*BETA./(1-RHO.^2).*(pagemtimes(-SAM(1,:,:)+RHO.*SAM(2,:,:),KK)+(SAM(1,:,:)-RHO.*SAM(2,:,:)).*sum(KK,1));
-    PK(2:end-1,:,:) = 4.*BETA./(1-RHO.^2).*(pagemtimes(RHO.*SAM(1:end-2,:,:)-(1+RHO.^2).*SAM(2:end-1,:,:)+RHO.*SAM(3:end,:,:),KK)+(-RHO.*SAM(1:end-2,:,:)+(1+RHO.^2).*SAM(2:end-1,:,:)-RHO.*SAM(3:end,:,:)).*sum(KK,1));
-    PK(end,:,:) = 4.*BETA./(1-RHO.^2).*(pagemtimes(RHO.*SAM(end-1,:,:)-SAM(end,:,:),KK)+(-RHO.*SAM(end-1,:,:)+SAM(end,:,:)).*sum(KK,1));
-    %}
-
-    
     KK = sum(SAM_T.^2,2) + pagetranspose(sum(SAM_T.^2,2)) - 2.*pagemtimes(SAM_T,SAM);
     KK_BIAS = (SAM_BIAS'-SAM_BIAS).^2;
 
@@ -122,8 +94,6 @@ for rr = 1:MAX_ITERS
 
     % Emission Model:
     AA_C = HH*SAM_G + HH0.*SAM_G(1,:) + HH1.*SAM_G(CNT+1,:) + HH2.*SAM_G(CNT+2,:) + SAM_BIAS.^2 - 0.1; % ages
-    % AA_C = SAM_BIAS.^2 - 0.1 + squeeze(sum(HHH.*reshape(SAM_G,[1,N0,nSamples]),2));
-    % AA_C = HH*SAM_G + SAM_BIAS.^2 - 0.1; % ages
 
     % 14C:
     MU = interp1(cal.A,cal.MU,AA_C,'linear','extrap');
@@ -147,8 +117,6 @@ for rr = 1:MAX_ITERS
     PDEV(UQ+1,:,:) = PDEV(UQ+1,:,:) + (QQ*(HH1.*DELTA)).*(2.*SAM(UQ+1,:,:));
     PDEV(UQ+2,:,:) = PDEV(UQ+2,:,:) + (QQ*(HH2.*DELTA)).*(2.*SAM(UQ+2,:,:));
   
-    % PDEV = PDEV + squeeze(sum(HHH.*reshape(DELTA,[N1,1,nSamples]),1)).*(2.*SAM);
-    % PDEV = PDEV + HH'*DELTA.*(2.*SAM);
     PDEV_BIAS = PDEV_BIAS + sum(DELTA,1).*(2.*SAM_BIAS);
 
 
@@ -168,21 +136,12 @@ for rr = 1:MAX_ITERS
 
     SAM = SAM - (eta*sqrt(1-beta2^rr)/(1-beta1^rr)).*Mw./(sqrt(Vw)+epsilon);
     SAM_BIAS = SAM_BIAS - (eta*sqrt(1-beta2^rr)/(1-beta1^rr)).*Mw_BIAS./(sqrt(Vw_BIAS)+epsilon);
-
-
-    %{
-    % Update:
-    SAM = SAM + eps.*PHI;
-    SAM_BIAS = SAM_BIAS + eps.*PHI_BIAS;
-    %}
 end
 
 
 SAMPLES.F = SAM;
 SAM_G =  sum(SAM.^2,3);
 SAMPLES.AGE = SAM_BIAS.^2 - 0.1 + HH*SAM_G + HH0.*SAM_G(1,:) + HH1.*SAM_G(CNT+1,:) + HH2.*SAM_G(CNT+2,:);
-% SAMPLES.AGE = SAM_BIAS.^2 - 0.1 + squeeze(sum(HHH.*reshape(SAM_G,[1,N0,nSamples]),2));
-% SAMPLES.AGE = HH*SAM_G + SAM_BIAS.^2 - 0.1;
 SAMPLES.BIAS = SAM_BIAS;
 
 
@@ -202,21 +161,6 @@ HH1 = min(D0-CNT.*setting.interval+AP,setting.interval);
 HH2 = max(D0-CNT.*setting.interval+AP-setting.interval,0);
 
 SAMPLES.AGE_D = SAM_BIAS.^2 - 0.1 + HH*SAM_G + HH0.*SAM_G(1,:) + HH1.*SAM_G(CNT+1,:) + HH2.*SAM_G(CNT+2,:);
-
-
-%{
-for k = 1:nSamples
-    HH = zeros(N0-1,N0);
-    for n = 1:N0-1
-        CNT = floor((D0(n)+AP(k))/setting.interval);
-        HH(n,1:CNT) = setting.interval;
-        HH(n,CNT+1) = D0(n) + AP(k) - CNT.*setting.interval;
-        HH(n,1) = HH(n,1) - AP(k);
-    end
-
-    SAMPLES.AGE_D(:,k) = SAM_BIAS(k).^2 - 0.1 + HH*SAM_G(:,k);
-end
-%}
 
 SAMPLES.ACC_RATE = SAM_G;
 

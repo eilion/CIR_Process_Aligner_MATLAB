@@ -1,1 +1,2 @@
 # CIR_Process_Aligner_MATLAB
+This software is for estimating CIR process mode parameters and aligning sediment cores containing benthic δ18O and/or 14C records, by following the algorithms in the paper [Lee et al., "CIR Process Age Inference Algorithm v1.0: scalable and consistent sedimentation rate modeling for ocean sediment cores via the Cox-Ingersoll-Ross process"] which is submitted to Geoscientific Model Development, available at https://egusphere.copernicus.org/preprints/2026/egusphere-2026-2299/, running on MATLAB.

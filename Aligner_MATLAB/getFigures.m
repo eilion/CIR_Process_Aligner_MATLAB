@@ -174,6 +174,9 @@ for ll = 1:L
         xlabel('Age (kyr)','FontSize',12);
         ylabel(['\delta^1^8O (',char(8240),')'],'FontSize',12);
     end
+
+
+    exportgraphics(gcf,['Outputs/',outputFile,'/',data(ll).name,'.png']);
 end
 
 end

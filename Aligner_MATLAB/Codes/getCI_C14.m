@@ -45,7 +45,7 @@ if L == 1
                 err_x = interp1q(AA,SIG,c14_x')';
                 RR_x = - (a+0.5)*log(2*b+(det_x+Table(3)-Table(1)).^2./(err_x.^2+Table(2)^2+Table(4)^2)) - 0.5*log(err_x.^2+Table(2)^2+Table(4)^2);
 
-                z = normrnd(x,0.3);
+                z = x + 0.3.*randn(size(x));
                 c14_z = min(max(z,AA(1)),AA(end));
                 det_z = interp1q(AA,MU,c14_z')';
                 err_z = interp1q(AA,SIG,c14_z')';
@@ -116,7 +116,7 @@ else
                     err_x = interp1q(AA,SIG,c14_x')';
                     RR_x = - (a+0.5)*log(2*b+(det_x+Table(3)-Table(1)).^2./(err_x.^2+Table(2)^2+Table(4)^2)) - 0.5*log(err_x.^2+Table(2)^2+Table(4)^2);
 
-                    z = normrnd(x,0.3);
+                    z = x + 0.3.*randn(size(x));
                     c14_z = min(max(z,AA(1)),AA(end));
                     det_z = interp1q(AA,MU,c14_z')';
                     err_z = interp1q(AA,SIG,c14_z')';

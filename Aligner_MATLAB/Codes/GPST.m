@@ -111,8 +111,8 @@ AA_Y = AA(ID_Y,:);
 AA_C = AA(ID_C,:);
 AA_A = AA(ID_A,:);
 
-PHI = normrnd(0,1,[N0,nSamples,2.*setting.alpha]);
-PHI_BIAS = normrnd(0,1,[1,nSamples]);
+PHI = randn(N0,nSamples,2.*setting.alpha);
+PHI_BIAS = randn(1,nSamples);
 
 LOGLIK_old = sum(sum(-0.5*PHI.^2-0.5*log(2*pi),3),1);
 LOGLIK_old = LOGLIK_old - 0.5*PHI_BIAS.^2 - 0.5*log(2*pi);
@@ -563,8 +563,8 @@ for rr = 1:MAX_ITERS
 
     LOGLIK_old = LOGLIK_old - sum(sum(-0.5*PHI.^2-0.5*log(2*pi),3),1);
     LOGLIK_old = LOGLIK_old + 0.5*PHI_BIAS.^2 + 0.5*log(2*pi);
-    PHI = normrnd(0,1,[N0,nSamples,2.*setting.alpha]);
-    PHI_BIAS = normrnd(0,1,[1,nSamples]);
+    PHI = randn(N0,nSamples,2.*setting.alpha);
+    PHI_BIAS = randn(1,nSamples);
     LOGLIK_old = LOGLIK_old + sum(sum(-0.5*PHI.^2-0.5*log(2*pi),3),1);
     LOGLIK_old = LOGLIK_old - 0.5*PHI_BIAS.^2 - 0.5*log(2*pi);
 

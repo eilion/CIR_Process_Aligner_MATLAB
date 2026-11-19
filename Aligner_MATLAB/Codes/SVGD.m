@@ -98,9 +98,9 @@ RHO = sqrt(RHO^INT);
 
 N0 = size(SAMPLES.F,1);
 SAM = ones(N0,nSamples,2.*setting.alpha)./sqrt(2.*setting.alpha);
-SAM = SAM + normrnd(0,0.01,[N0,nSamples,2.*setting.alpha]);
+SAM = SAM + 0.01.*randn(N0,nSamples,2.*setting.alpha);
 
-SAM_BIAS = ones(1,nSamples) + normrnd(0,0.1,[1,nSamples]);
+SAM_BIAS = ones(1,nSamples) + 0.1.*randn(1,nSamples);
 
 
 Mw = 0;

@@ -199,7 +199,7 @@ target.stack.PSIG(2:N-1) = (target.stack.SIG(3:N)-target.stack.SIG(2:N-1))./(tar
 target.stack.PSIG(2:N-1) = target.stack.PSIG(2:N-1)/2;
 
 
-target.calibration = struct('A',cell(4,1),'MU',cell(4,1),'PMU',cell(4,1),'SIG',cell(4,1),'PSIG',cell(4,1));
+target.calibration = struct('A',cell(3,1),'MU',cell(3,1),'PMU',cell(3,1),'SIG',cell(3,1),'PSIG',cell(3,1));
 
 path = 'Defaults/calibration_curves/IntCal20.csv';
 AA = readtable(path);
@@ -261,30 +261,6 @@ target.calibration(3).PSIG(2:N-1) = (target.calibration(3).SIG(3:N)-target.calib
 target.calibration(3).PSIG(2:N-1) = target.calibration(3).PSIG(2:N-1)/2;
 
 
-
-path = ['Inputs/',inputFile,'/calibration_curve_14C.txt'];
-if exist(path,'file') == 2
-    AA = readtable(path);
-
-    target.calibration(4).A = AA.cal_bp/1000;
-    target.calibration(4).MU = AA.a14C_age/1000;
-    target.calibration(4).SIG = AA.error/1000;
-
-
-    N = size(target.calibration(4).A,1);
-    target.calibration(4).PMU = zeros(N,1);
-    target.calibration(4).PMU(1) = (target.calibration(4).MU(2)-target.calibration(4).MU(1))./(target.calibration(4).A(2)-target.calibration(4).A(1));
-    target.calibration(4).PMU(N) = (target.calibration(4).MU(N)-target.calibration(4).MU(N-1))./(target.calibration(4).A(N)-target.calibration(4).A(N-1));
-    target.calibration(4).PMU(2:N-1) = (target.calibration(4).MU(3:N)-target.calibration(4).MU(2:N-1))./(target.calibration(4).A(3:N)-target.calibration(4).A(2:N-1)) + (target.calibration(4).MU(2:N-1)-target.calibration(4).MU(1:N-2))./(target.calibration(4).A(2:N-1)-target.calibration(4).A(1:N-2));
-    target.calibration(4).PMU(2:N-1) = target.calibration(4).PMU(2:N-1)/2;
-    target.calibration(4).PSIG = zeros(N,1);
-    target.calibration(4).PSIG(1) = (target.calibration(4).SIG(2)-target.calibration(4).SIG(1))./(target.calibration(4).A(2)-target.calibration(4).A(1));
-    target.calibration(4).PSIG(N) = (target.calibration(4).SIG(N)-target.calibration(4).SIG(N-1))./(target.calibration(4).A(N)-target.calibration(4).A(N-1));
-    target.calibration(4).PSIG(2:N-1) = (target.calibration(4).SIG(3:N)-target.calibration(4).SIG(2:N-1))./(target.calibration(4).A(3:N)-target.calibration(4).A(2:N-1)) + (target.calibration(4).SIG(2:N-1)-target.calibration(4).SIG(1:N-2))./(target.calibration(4).A(2:N-1)-target.calibration(4).A(1:N-2));
-    target.calibration(4).PSIG(2:N-1) = target.calibration(4).PSIG(2:N-1)/2;
-end
-
-
 SAMPLES = struct('name',cell(L,1));
 for ll = 1:L
 
@@ -303,7 +279,7 @@ for ll = 1:L
 
     N0 = size(SAMPLES(ll).D,1);
     SAMPLES(ll).F = sqrt(data(ll).R).*ones(N0,100,2.*setting(ll).alpha)./sqrt(2.*setting(ll).alpha);
-    SAMPLES(ll).F = SAMPLES(ll).F + normrnd(0,0.01,[N0,100,2.*setting(ll).alpha]);
+    SAMPLES(ll).F = SAMPLES(ll).F + 0.01.*randn(N0,100,2.*setting(ll).alpha);
 
     N = size(data(ll).depth,1);
     SAMPLES(ll).AGE = [];
@@ -328,7 +304,7 @@ for ll = 1:L
 
     SAM_G = sum(SAMPLES(ll).F.^2,3);
 
-    SAMPLES(ll).BIAS = ones(1,100) + normrnd(0,0.1,[1,100]);
+    SAMPLES(ll).BIAS = ones(1,100) + 0.1.*randn(1,100);
 
     AA = SAMPLES(ll).BIAS.^2 - 0.1 + squeeze(sum(HH.*reshape(SAM_G,[1,N0,100]),2));
 

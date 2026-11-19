@@ -1,9 +1,13 @@
-function AccMODEL(inputFile,ALPHA,BETA0,RHO0,initial,INT,max_iters,iters_for_R)
+function AccMODEL(inputFile,ALPHA,BETA0,RHO0,initial,INT,max_iters,iters_for_R,SEED)
 
 addpath('Codes/');
 disp('-----------------------------------------------------------------');
 disp('## This software is designed to learn the accumulation rate model (gamma process).');
 disp(['#  The input file is ',inputFile,'.']);
+
+% random_seed:
+STREAM = RandStream('mrg32k3a','Seed',SEED);
+RandStream.setGlobalStream(STREAM);
 
 % Load setting:
 [setting] = getSetting(inputFile,ALPHA,INT,max_iters);
@@ -11,10 +15,16 @@ disp(['#  The input file is ',inputFile,'.']);
 % Load data:
 [data,param,SAMPLES,target,setting] = getData(inputFile,setting,initial,BETA0,RHO0);
 
+L = length(SAMPLES);
+
 % Initialization:
 if isempty(initial)
     disp('#  Accumulation rates are being initialized...');
-    parfor ll = 1:length(SAMPLES)
+    parfor ll = 1:L
+        % random_seed:
+        workerStream = RandStream.getGlobalStream();
+        workerStream.Substream = 1 + ll; 
+
         [data(ll),SAMPLES(ll)] = SVGD(data(ll),param,SAMPLES(ll),target,setting,5000,100);
         [data(ll),SAMPLES(ll)] = GPST(data(ll),param,SAMPLES(ll),target,setting,1000,100);
         disp(['   ',data(ll).name,' has been processed with the average accRate = ',num2str(mean(SAMPLES(ll).APP_RATE)),'% and sedRate = ',num2str(data(ll).R),'.']);
@@ -28,11 +38,19 @@ R0 = length(setting.BETA);
 for r = 1:setting.max_iters
     if ~isinf(iters_for_R)
         if rem(R0+r,iters_for_R)==1
+
+            % random_seed:
+            STREAM.Substream = L + 2;
+            
             disp('## Average accumulation rates are being updated...');
             [data,SAMPLES] = learnRR(data,SAMPLES,target,setting);
 
             disp('## Accumulation rates are being initialized...');
             parfor ll = 1:length(SAMPLES)
+                % random_seed:
+                workerStream = RandStream.getGlobalStream();
+                workerStream.Substream = L + 2 + ll;
+
                 [data(ll),SAMPLES(ll)] = SVGD(data(ll),param,SAMPLES(ll),target,setting,5000,100);
                 [data(ll),SAMPLES(ll)] = GPST(data(ll),param,SAMPLES(ll),target,setting,1000,100);
                 disp(['   ',data(ll).name,' has been processed with the average accRate = ',num2str(mean(SAMPLES(ll).APP_RATE)),'% and sedRate = ',num2str(data(ll).R),'.']);
@@ -45,6 +63,10 @@ for r = 1:setting.max_iters
     disp(['## Iteration ',num2str(r),'/',num2str(setting.max_iters),':']);
     disp('#  Samples are being drawn...');
     parfor ll = 1:length(SAMPLES)
+        % random_seed:
+        workerStream = RandStream.getGlobalStream();
+        workerStream.Substream = 2*L + 2 + ll;
+
         [data(ll),SAMPLES(ll)] = GPST(data(ll),param,SAMPLES(ll),target,setting,250,100);
         disp(['   ',data(ll).name,' has been processed with the average accRate = ',num2str(mean(SAMPLES(ll).APP_RATE)),'% and sedRate = ',num2str(data(ll).R),'.']);
     end

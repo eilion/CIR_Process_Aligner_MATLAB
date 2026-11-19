@@ -1,16 +1,32 @@
-function draw_Samples(inputFile,ALPHA,BETA0,RHO0,INT)
+function draw_Samples(inputFile,ALPHA,BETA0,RHO0,INT,SEED)
 
-% inputFile: the name of folder in 'Initializations/'. For example,
-% 'DATA_02282025_K_4_INT_0.5'. Here, K = 2*ALPHA.
+% inputFile: the name of folder in 'Inputs/'. For example, 'DATA_02282025'.
+
 % ALPHA: the value of \alpha in the main manuscript. For example, '2.0'.
+
 % BETA0: the initial value of \beta in the main manuscript.
+
 % RHO0: the initial value of \rho in the main manuscript.
+
 % INT: the length of unitless interval. For example, '0.5'.
+
+% SEED: random seed. If you want to "randomize" the running, set SEED to be
+% 'NaN'.
+
+
 
 addpath('Codes/');
 disp('-----------------------------------------------------------------');
 disp('## This software is designed to learn the accumulation rate model (gamma process).');
 disp(['#  The input file is ',inputFile,'.']);
+
+if isnan(SEED) || strcmp(SEED,'NaN')
+    SEED = 'shuffle';
+end
+
+% random_seed:
+STREAM = RandStream('mrg32k3a','Seed',SEED);
+RandStream.setGlobalStream(STREAM);
 
 % Load setting:
 [setting] = getSetting(inputFile,ALPHA,INT,0);
@@ -19,6 +35,10 @@ disp(['#  The input file is ',inputFile,'.']);
 [data,param,SAMPLES,target,setting] = getData(inputFile,setting,[],BETA0,RHO0);
 
 parfor ll = 1:length(SAMPLES)
+    % random_seed:
+    workerStream = RandStream.getGlobalStream();
+    workerStream.Substream = 1 + ll;
+
     [data(ll),SAMPLES(ll)] = SVGD(data(ll),param,SAMPLES(ll),target,setting,5000,100);
     [data(ll),SAMPLES(ll)] = GPST(data(ll),param,SAMPLES(ll),target,setting,1000,100);
     [data(ll),SAMPLES(ll)] = GPST(data(ll),param,SAMPLES(ll),target,setting,1000,1000);

@@ -17,9 +17,9 @@ for ll = 1:Q
 
     N0 = size(SAMPLES(ll).D,1);
     SAMPLES(ll).F = ones(N0,setting.nSamples,setting.K)./sqrt(setting.K);
-    SAMPLES(ll).F = SAMPLES(ll).F + normrnd(0,0.01,[N0,setting.nSamples,setting.K]);
+    SAMPLES(ll).F = SAMPLES(ll).F + 0.01.*randn(N0,setting.nSamples,setting.K);
 
-    SAMPLES(ll).BIAS = ones(1,setting.nSamples) + normrnd(0,0.1,[1,setting.nSamples]);
+    SAMPLES(ll).BIAS = ones(1,setting.nSamples) + 0.1.*randn(1,setting.nSamples);
 end
 
 

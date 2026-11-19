@@ -117,7 +117,7 @@ else
 
         N0 = size(SAMPLES(ll).D,1);
         SAMPLES(ll).F = ones(N0,setting.nSamples,setting.K)./sqrt(setting.K);
-        SAMPLES(ll).F = SAMPLES(ll).F + normrnd(0,0.01,[N0,setting.nSamples,setting.K]);
+        SAMPLES(ll).F = SAMPLES(ll).F + 0.01.*randn(N0,setting.nSamples,setting.K);
 
         N = size(data(ll).depth,1);
         SAMPLES(ll).AGE = [];
@@ -142,7 +142,7 @@ else
 
         SAM_G = sum(SAMPLES(ll).F.^2,3);
 
-        SAMPLES(ll).BIAS = ones(1,setting.nSamples) + normrnd(0,0.1,[1,setting.nSamples]);
+        SAMPLES(ll).BIAS = ones(1,setting.nSamples) + 0.1.*randn(1,setting.nSamples);
 
         AA = SAMPLES(ll).BIAS.^2 - 0.1 + squeeze(sum(HH.*reshape(SAM_G,[1,N0,setting.nSamples]),2));
 
